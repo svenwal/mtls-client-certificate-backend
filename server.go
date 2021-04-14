@@ -1,19 +1,19 @@
 package main
 
 import (
-	"net/http"
-	"log"
 	"crypto/tls"
-	"io/ioutil"
 	"crypto/x509"
-	"path/filepath"
 	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"path/filepath"
 )
 
 type Answer struct {
-	Name    string
+	Name      string
 	Functions []string
-  }
+}
 
 func HelloServer(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
@@ -27,11 +27,10 @@ func handleError(err error) {
 }
 
 func main() {
-	absPathServerCrt, err := filepath.Abs("certs/ca/certs/ca.cert.pem")
+	absPathServerCrt, err := filepath.Abs("certs/ca/ca.cert.pem")
 	handleError(err)
 	absPathServerKey, err := filepath.Abs("certs/ca/private/ca.key.unencrypted.pem")
 	handleError(err)
-
 
 	clientCACert, err := ioutil.ReadFile(absPathServerCrt)
 	handleError(err)
@@ -40,14 +39,13 @@ func main() {
 	clientCertPool.AppendCertsFromPEM(clientCACert)
 
 	tlsConfig := &tls.Config{
-		ClientAuth: tls.RequireAndVerifyClientCert,
-		ClientCAs: clientCertPool,
+		ClientAuth:               tls.RequireAndVerifyClientCert,
+		ClientCAs:                clientCertPool,
 		PreferServerCipherSuites: true,
-		MinVersion: tls.VersionTLS12,
+		MinVersion:               tls.VersionTLS12,
 	}
 
 	tlsConfig.BuildNameToCertificate()
-
 
 	http.HandleFunc("/", JsonServer)
 	httpServer := &http.Server{
@@ -55,19 +53,19 @@ func main() {
 		TLSConfig: tlsConfig,
 	}
 
-	err = httpServer.ListenAndServeTLS(absPathServerCrt,absPathServerKey)
+	err = httpServer.ListenAndServeTLS(absPathServerCrt, absPathServerKey)
 	handleError(err)
 }
 
 func JsonServer(w http.ResponseWriter, r *http.Request) {
-	profile := Answer{"Kong Enterprise", []string{"Gateway", "Manager", "Developer Portal", "Vitals", "Brain", "Immunity"}}
-  
+	profile := Answer{"Konnect Enterprise", []string{"Gateway", "Manager", "Developer Portal", "Vitals", "Immunity", "Mesh"}}
+
 	js, err := json.Marshal(profile)
 	if err != nil {
-	  http.Error(w, err.Error(), http.StatusInternalServerError)
-	  return
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-  
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
-  }
+}
