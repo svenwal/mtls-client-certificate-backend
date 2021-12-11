@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4
+
+* No change to code, just also pushed the ARM version to Docker Hub
+
 ## 0.3
 
 * fixed missing / broken folders in GitHub
